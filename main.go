@@ -1,34 +1,39 @@
 package main
 
+import (
+	"os"
+
+	bambulabs_api "github.com/torbenconto/bambulabs_api"
+)
+
 /*
 Making a new type "Config" and making it a struct
 the struct holds 3 values, all of which are drawn from a json file
 */
 
 type Config struct {
-	IPAdress     string `json:"IPAdress"`
+	IPAddress    string `json:"IPAddress"`
 	SerialNumber string `json:"SerialNumber"`
 	AccessCode   string `json:"AccessCode"`
 }
 
 /*
+ */
+func main() {
 
-*/
-func main(){
+	file, err := os.Open("config.json")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
 
-err := printer.Connect()
-if err != nil {
-    panic(err)
+	pool := bambulabs_api.NewPrinterPool()
+
+	configs := []*Config{}
+	for _, config := range configs {
+		pool.AddPrinter(config)
+	}
 }
-
-pool := bambulabs_api.NewPrinterPool()
-
-for i := 0; i < len(Config[]); i++{
-	pool.AddPrinter(Config)
-}
-}
-
-
 
 /*"IPAddress": " ",
 "SerialNumber": " ",
