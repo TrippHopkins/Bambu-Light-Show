@@ -65,7 +65,7 @@ func main() {
 					return err
 				}
 
-				err = p.SendGcode([]string{"G1 Z150"})
+				err = p.SendGcode([]string{"G1 Z255"})
 				if err != nil {
 					return err
 				}
@@ -79,7 +79,7 @@ func main() {
 			pool.ExecuteAllSequentially(func(p *bambulabs_api.Printer) error {
 				time.Sleep(1000 * time.Millisecond)
 
-				err := p.LightOff(light.ChamberLight)
+				err := p.LightFlashing(light.ChamberLight, 100, 100, 10, 100)
 				if err != nil {
 					return err
 				}
@@ -92,7 +92,7 @@ func main() {
 				return nil
 			})
 		}
-		time.Sleep(4000 * time.Millisecond)
+		time.Sleep(10000 * time.Millisecond)
 
 	}
 
