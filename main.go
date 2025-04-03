@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"os"
+	"time"
 
 	"github.com/torbenconto/bambulabs_api"
 	"github.com/torbenconto/bambulabs_api/light"
@@ -53,11 +54,76 @@ func main() {
 		panic(err)
 	}
 
+	for i := 0; i < 10; i++ {
+		if i%2 == 0 {
+			pool.ExecuteAllSequentially(func(p *bambulabs_api.Printer) error {
+
+				time.Sleep(1000 * time.Millisecond)
+
+				err := p.LightOn(light.ChamberLight)
+				if err != nil {
+					return err
+				}
+
+				err = p.SendGcode([]string{"G1 Z150"})
+				if err != nil {
+					return err
+				}
+
+				return nil
+
+			})
+		}
+
+		if i%2 == 1 {
+			pool.ExecuteAllSequentially(func(p *bambulabs_api.Printer) error {
+				time.Sleep(1000 * time.Millisecond)
+
+				err := p.LightOff(light.ChamberLight)
+				if err != nil {
+					return err
+				}
+
+				err = p.SendGcode([]string{"G1 Z0"})
+				if err != nil {
+					return err
+				}
+
+				return nil
+			})
+		}
+		time.Sleep(4000 * time.Millisecond)
+
+	}
+
+	// pool.ExecuteAllSequentially(func(p *bambulabs_api.Printer) error {
+	// 	time.Sleep(1000 * time.Millisecond)
+	// 	return p.SendGcode([]string{"G1 Z0"})
+	// })
+
+	// pool.ExecuteAll(func(p *bambulabs_api.Printer) error {
+	// 	return p.LightFlashing(light.ChamberLight, 50, 50, 10, 50)
+	// })
+
+	// for i := 0; i < 1000; i++ {
+	// 	pool.ExecuteAll(func(p *bambulabs_api.Printer) error {
+	// 		time.Sleep(468 * time.Millisecond)
+
+	// 		if i%2 == 0 {
+	// 			return p.LightOn(light.ChamberLight)
+	// 		} else {
+	// 			return p.LightOff(light.ChamberLight)
+	// 		}
+	// 	})
+	// }
+
 	// Execute a function across all connected printers in the pool
 	// The function turns on the chamber light for each printer
-	pool.ExecuteAll(func(p *bambulabs_api.Printer) error {
-		return p.LightOn(light.ChamberLight)
-	})
+	// pool.ExecuteAllSequentially(func(p *bambulabs_api.Printer) error {
+	// 	time.Sleep(150 * time.Millisecond)
+
+	// 	return p.LightOff(light.ChamberLight)
+	// })
 
 	// Disconnect from all printers in the pool to insure no memory leaks
 	err = pool.DisconnectAll()
