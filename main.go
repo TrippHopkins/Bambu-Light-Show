@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"time"
 
@@ -54,7 +55,7 @@ func main() {
 		panic(err)
 	}
 
-	for i := 0; i < 10; i++ {
+	for i := 1; i < 4; i++ {
 		if i%2 == 0 {
 			pool.ExecuteAllSequentially(func(p *bambulabs_api.Printer) error {
 
@@ -62,73 +63,101 @@ func main() {
 
 				err := p.LightOn(light.ChamberLight)
 				if err != nil {
-					return err
+					fmt.Println("There was an Error With the Lights1")
+					panic(err)
 				}
 
-				err = p.SendGcode([]string{"G1 Z255"})
+				err = p.SendGcode([]string{"G1 Z200"})
 				if err != nil {
-					return err
+					fmt.Println("There was an Error With the GCode1")
+					panic(err)
 				}
 
 				return nil
 
 			})
 		}
-
 		if i%2 == 1 {
 			pool.ExecuteAllSequentially(func(p *bambulabs_api.Printer) error {
 				time.Sleep(1000 * time.Millisecond)
 
 				err := p.LightFlashing(light.ChamberLight, 100, 100, 10, 100)
 				if err != nil {
-					return err
+					fmt.Println("There was an Error With the Lights2")
+					panic(err)
 				}
 
-				err = p.SendGcode([]string{"G1 Z0"})
+				err = p.SendGcode([]string{"G1 Z15"})
 				if err != nil {
-					return err
+					fmt.Println("There was an Error With the Gcode2")
+					panic(err)
 				}
 
 				return nil
 			})
 		}
-		time.Sleep(10000 * time.Millisecond)
-
+		time.Sleep(7000 * time.Millisecond)
 	}
+	// for i := 1; i < 4; i++ {
+	// 	if i%2 == 0 {
+	// 		pool.ExecuteOnN(func(p *bambulabs_api.Printer) error {
+	// 			err = p.LightOn(light.ChamberLight)
+	// 			if err != nil {
+	// 				return err
+	// 			}
+	// 			err = p.SendGcode([]string{"G1 Z100"})
+	// 			if err != nil {
+	// 				return err
+	// 			}
 
-	// pool.ExecuteAllSequentially(func(p *bambulabs_api.Printer) error {
-	// 	time.Sleep(1000 * time.Millisecond)
-	// 	return p.SendGcode([]string{"G1 Z0"})
-	// })
+	// 			return nil
+	// 		}, []int{1, 2})
 
-	// pool.ExecuteAll(func(p *bambulabs_api.Printer) error {
-	// 	return p.LightFlashing(light.ChamberLight, 50, 50, 10, 50)
-	// })
-
-	// for i := 0; i < 1000; i++ {
-	// 	pool.ExecuteAll(func(p *bambulabs_api.Printer) error {
-	// 		time.Sleep(468 * time.Millisecond)
-
-	// 		if i%2 == 0 {
-	// 			return p.LightOn(light.ChamberLight)
-	// 		} else {
-	// 			return p.LightOff(light.ChamberLight)
+	// 	}
+	// 	pool.ExecuteOnN(func(p *bambulabs_api.Printer) error {
+	// 		err = p.LightOff(light.ChamberLight)
+	// 		if err != nil {
+	// 			return err
 	// 		}
-	// 	})
+	// 		err = p.SendGcode([]string{"G1 Z210"})
+	// 		if err != nil {
+	// 			return err
+	// 		}
+
+	// 		return nil
+	// 	}, []int{0, 3})
+
+	// 	if i%2 == 1 {
+	// 		pool.ExecuteOnN(func(p *bambulabs_api.Printer) error {
+	// 			err = p.LightOff(light.ChamberLight)
+	// 			if err != nil {
+	// 				return err
+	// 			}
+	// 			err = p.SendGcode([]string{"G1 Z210"})
+	// 			if err != nil {
+	// 				return err
+	// 			}
+
+	// 			return nil
+	// 		}, []int{1, 2})
+
+	// 	}
+	// 	pool.ExecuteOnN(func(p *bambulabs_api.Printer) error {
+	// 		err = p.LightOn(light.ChamberLight)
+	// 		if err != nil {
+	// 			return err
+	// 		}
+	// 		err = p.SendGcode([]string{"G1 Z100"})
+	// 		if err != nil {
+	// 			return err
+	// 		}
+
+	// 		return nil
+	// 	}, []int{0, 3})
+
 	// }
-
-	// Execute a function across all connected printers in the pool
-	// The function turns on the chamber light for each printer
-	// pool.ExecuteAllSequentially(func(p *bambulabs_api.Printer) error {
-	// 	time.Sleep(150 * time.Millisecond)
-
-	// 	return p.LightOff(light.ChamberLight)
-	// })
-
-	// Disconnect from all printers in the pool to insure no memory leaks
 	err = pool.DisconnectAll()
 	if err != nil {
 		panic(err)
 	}
-
 }
