@@ -8,6 +8,7 @@ import (
 
 	"github.com/torbenconto/bambulabs_api"
 	"github.com/torbenconto/bambulabs_api/light"
+	"github.com/torbenconto/bambulabs_api/printspeed"
 )
 
 // Config holds the configuration for the printers
@@ -55,7 +56,7 @@ func main() {
 		panic(err)
 	}
 
-	for i := 1; i < 4; i++ {
+	for i := 0; i < 2; i++ {
 		if i%2 == 0 {
 			pool.ExecuteAllSequentially(func(p *bambulabs_api.Printer) error {
 
@@ -96,66 +97,86 @@ func main() {
 				return nil
 			})
 		}
-		time.Sleep(7000 * time.Millisecond)
+		time.Sleep(10000 * time.Millisecond)
 	}
-	// for i := 1; i < 4; i++ {
-	// 	if i%2 == 0 {
-	// 		pool.ExecuteOnN(func(p *bambulabs_api.Printer) error {
-	// 			err = p.LightOn(light.ChamberLight)
-	// 			if err != nil {
-	// 				return err
-	// 			}
-	// 			err = p.SendGcode([]string{"G1 Z100"})
-	// 			if err != nil {
-	// 				return err
-	// 			}
 
-	// 			return nil
-	// 		}, []int{1, 2})
+	for i := 0; i < 4; i++ {
+		pool.ExecuteOnN(func(p *bambulabs_api.Printer) error {
 
-	// 	}
-	// 	pool.ExecuteOnN(func(p *bambulabs_api.Printer) error {
-	// 		err = p.LightOff(light.ChamberLight)
-	// 		if err != nil {
-	// 			return err
-	// 		}
-	// 		err = p.SendGcode([]string{"G1 Z210"})
-	// 		if err != nil {
-	// 			return err
-	// 		}
+			err = p.SetPrintSpeed(printspeed.Sport)
+			if err != nil {
+				return err
+			}
 
-	// 		return nil
-	// 	}, []int{0, 3})
+			err = p.LightOn(light.ChamberLight)
+			if err != nil {
+				return err
+			}
+			err = p.SendGcode([]string{"G1 Z100"})
+			if err != nil {
+				return err
+			}
 
-	// 	if i%2 == 1 {
-	// 		pool.ExecuteOnN(func(p *bambulabs_api.Printer) error {
-	// 			err = p.LightOff(light.ChamberLight)
-	// 			if err != nil {
-	// 				return err
-	// 			}
-	// 			err = p.SendGcode([]string{"G1 Z210"})
-	// 			if err != nil {
-	// 				return err
-	// 			}
+			return nil
+		}, []int{1, 2})
 
-	// 			return nil
-	// 		}, []int{1, 2})
+		pool.ExecuteOnN(func(p *bambulabs_api.Printer) error {
 
-	// 	}
-	// 	pool.ExecuteOnN(func(p *bambulabs_api.Printer) error {
-	// 		err = p.LightOn(light.ChamberLight)
-	// 		if err != nil {
-	// 			return err
-	// 		}
-	// 		err = p.SendGcode([]string{"G1 Z100"})
-	// 		if err != nil {
-	// 			return err
-	// 		}
+			err = p.SetPrintSpeed(printspeed.Sport)
+			if err != nil {
+				return err
+			}
 
-	// 		return nil
-	// 	}, []int{0, 3})
+			err = p.LightOff(light.ChamberLight)
+			if err != nil {
+				return err
+			}
+			err = p.SendGcode([]string{"G1 Z210"})
+			if err != nil {
+				return err
+			}
 
-	// }
+			return nil
+		}, []int{0, 3})
+		time.Sleep(10000 * time.Millisecond)
+		pool.ExecuteOnN(func(p *bambulabs_api.Printer) error {
+			err = p.SetPrintSpeed(printspeed.Sport)
+			if err != nil {
+				return err
+			}
+
+			err = p.LightOff(light.ChamberLight)
+			if err != nil {
+				return err
+			}
+			err = p.SendGcode([]string{"G1 Z210"})
+			if err != nil {
+				return err
+			}
+
+			return nil
+		}, []int{1, 2})
+
+		pool.ExecuteOnN(func(p *bambulabs_api.Printer) error {
+
+			err = p.SetPrintSpeed(printspeed.Sport)
+			if err != nil {
+				return err
+			}
+
+			err = p.LightOn(light.ChamberLight)
+			if err != nil {
+				return err
+			}
+			err = p.SendGcode([]string{"G1 Z100"})
+			if err != nil {
+				return err
+			}
+
+			return nil
+		}, []int{0, 3})
+		time.Sleep(15000 * time.Millisecond)
+	}
 	err = pool.DisconnectAll()
 	if err != nil {
 		panic(err)
