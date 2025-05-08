@@ -10,7 +10,7 @@ import (
 
 // makes the printers form a diagonal line from bottom left to top right and vice versa
 func Function2(pool *bambulabs_api.PrinterPool) error {
-	for i := 0; i < 4; i++ {
+	for i := 0; i < 2; i++ {
 		//Execute the function on the at the index of the printer provided relative to the json file
 		pool.ExecuteOnN(func(p *bambulabs_api.Printer) error {
 
@@ -89,7 +89,7 @@ func Function2(pool *bambulabs_api.PrinterPool) error {
 
 			return nil
 		}, []int{0, 3})
-		time.Sleep(15000 * time.Millisecond)
+		time.Sleep(10000 * time.Millisecond)
 	}
 	return nil
 }
